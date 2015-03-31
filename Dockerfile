@@ -11,6 +11,7 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 # Compile Ruby from source
 RUN wget http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.1.tar.gz
 RUN tar -xvzf ruby-2.2.1.tar.gz
+RUN cd ruby-2.2.1.tar.gz
 RUN ./configure
 RUN make
 RUN sudo make install
