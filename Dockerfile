@@ -1,38 +1,48 @@
-# Dockerfile for a Rails application using Nginx and Unicorn
+FROM seapy/ruby:2.2.0
+MAINTAINER ChangHoon Jeong <iamseapy@gmail.com>
 
-# Select ubuntu as the base image
-FROM ubuntu
+RUN apt-get update
 
-# Install nginx, nodejs and curl
-RUN apt-get update -q
-RUN apt-get install -qy nginx
-RUN apt-get install -qy curl
-RUN apt-get install -qy nodejs
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+# Install nodejs
+RUN apt-get install -qq -y nodejs
 
-# Install rvm, ruby, bundler
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-RUN curl -sSL https://get.rvm.io | bash -s stable
-RUN /bin/bash -l -c "rvm requirements"
-RUN /bin/bash -l -c "rvm install 2.1.0"
-RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
+# Intall software-properties-common for add-apt-repository
+RUN apt-get install -qq -y software-properties-common
 
-# Add configuration files in repository to filesystem
-ADD config/container/nginx-sites.conf /etc/nginx/sites-enabled/default
-ADD config/container/start-server.sh /usr/bin/start-server
-RUN chmod +x /usr/bin/start-server
+# Install Nginx.
+RUN add-apt-repository -y ppa:nginx/stable
+RUN apt-get update
+RUN apt-get install -qq -y nginx
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+RUN chown -R www-data:www-data /var/lib/nginx
+# Add default nginx config
+ADD nginx-sites.conf /etc/nginx/sites-enabled/default
 
-# Add rails project to project directory
-ADD ./ /rails
+# Install foreman
+RUN gem install foreman
 
-# set WORKDIR
-WORKDIR /rails
+# Install the latest postgresql lib for pg gem
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --force-yes libpq-dev
 
-# bundle install
-RUN /bin/bash -l -c "bundle install"
+## Install MySQL(for mysql, mysql2 gem)
+RUN apt-get install -qq -y libmysqlclient-dev
 
-# Publish port 80
-EXPOSE 80
+# Install Rails App
+WORKDIR /app
+ONBUILD ADD Gemfile /app/Gemfile
+ONBUILD ADD Gemfile.lock /app/Gemfile.lock
+ONBUILD RUN bundle install --without development test
+ONBUILD ADD . /app
 
-# Startup commands
-ENTRYPOINT /usr/bin/start-server
+# Add default unicorn config
+ADD unicorn.rb /app/config/unicorn.rb
+
+# Add default foreman config
+ADD Procfile /app/Procfile
+
+ENV RAILS_ENV production
+
+CMD bundle exec rake assets:precompile && foreman start -f Procfile
