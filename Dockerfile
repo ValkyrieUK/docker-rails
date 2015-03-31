@@ -11,7 +11,7 @@ RUN apt-get install -y build-essential
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Compile Ruby from source
-RUN apt-get install software-properties-common
+RUN apt-get install -y software-properties-common
 RUN apt-add-repository ppa:brightbox/ruby-ng
 RUN apt-get update
 RUN apt-get install -y ruby2.2
