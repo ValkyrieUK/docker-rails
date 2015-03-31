@@ -7,7 +7,7 @@ RUN apt-get install -qy nginx
 RUN apt-get install -qy curl
 RUN apt-get install -y wget
 RUN apt-get install -qy nodejs
-RUN apt-get install build-essential
+RUN apt-get install -y build-essential
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Compile Ruby from source
