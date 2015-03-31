@@ -16,4 +16,4 @@ RUN tar -xvzf ruby-2.2.1.tar.gz
 WORKDIR ruby-2.2.1
 RUN ./configure
 RUN make
-RUN sudo make install
+RUN make install
