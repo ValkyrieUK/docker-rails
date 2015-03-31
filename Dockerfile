@@ -5,6 +5,7 @@ FROM ubuntu
 RUN apt-get update -q
 RUN apt-get install -qy nginx
 RUN apt-get install -qy curl
+RUN apt-get install -y wget
 RUN apt-get install -qy nodejs
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
