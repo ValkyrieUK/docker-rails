@@ -1,6 +1,5 @@
 FROM ruby:2.1-onbuild
 
-RUN locale-gen en_GB.UTF-8
 RUN apt-get update
 
 # Install nodejs
