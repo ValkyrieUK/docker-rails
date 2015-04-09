@@ -32,22 +32,22 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/
 RUN apt-get install -qq -y libmysqlclient-dev
 
 # Install Rails App
-WORKDIR /app
-ONBUILD ADD Gemfile /app/Gemfile
-ONBUILD ADD Gemfile.lock /app/Gemfile.lock
+WORKDIR /application
+ONBUILD ADD Gemfile /application/Gemfile
+ONBUILD ADD Gemfile.lock /application/Gemfile.lock
 ONBUILD RUN bundle install --without development test
-ONBUILD ADD . /app
+ONBUILD ADD . /application
 
 # Add default unicorn config
-ADD unicorn.rb /app/config/unicorn.rb
+ADD unicorn.rb /application/config/unicorn.rb
 
 # Add default foreman config
-ADD Procfile /app/Procfile
+ADD Procfile /application/Procfile
 
-RUN cd /app; bundle exec rake assets:precompile
+RUN bundle exec rake assets:precompile
 
 ENV RAILS_ENV production
 
 EXPOSE 80
 
-ENTRYPOINT cd /app; bundle exec foreman start -f Procfile
+ENTRYPOINT bundle exec foreman start -f Procfile
