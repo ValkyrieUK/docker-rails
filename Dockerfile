@@ -46,4 +46,6 @@ ADD Procfile /app/Procfile
 
 ENV RAILS_ENV production
 
-CMD bundle exec rake assets:precompile && foreman start -f Procfile
+EXPOSE 80
+
+ENTRYPOINT bundle exec rake assets:precompile && foreman start -f Procfile
