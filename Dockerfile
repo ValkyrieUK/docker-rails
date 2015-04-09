@@ -1,6 +1,7 @@
 FROM seapy/ruby:2.2.0
 MAINTAINER ChangHoon Jeong <iamseapy@gmail.com>
 
+RUN locale-gen en_GB.UTF-8
 RUN apt-get update
 
 # Install nodejs
