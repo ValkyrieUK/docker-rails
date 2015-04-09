@@ -44,8 +44,10 @@ ADD unicorn.rb /app/config/unicorn.rb
 # Add default foreman config
 ADD Procfile /app/Procfile
 
+RUN cd /app; bundle exec rake assets:precompile
+
 ENV RAILS_ENV production
 
 EXPOSE 80
 
-ENTRYPOINT bundle exec rake assets:precompile && foreman start -f Procfile
+ENTRYPOINT cd /app; bundle exec foreman start -f Procfile
